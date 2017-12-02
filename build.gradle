@@ -1,0 +1,60 @@
+buildscript {
+    ext.kotlin_version = "1.2.0"
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+plugins {
+    id "java"
+    id "ru.endlesscode.bukkitgradle" version "0.6.7"
+}
+
+apply plugin: "kotlin"
+
+group "github.flaghacker.tipsplugin"
+version "0.0.1"
+
+bukkit {
+    version = "1.12.2"
+
+    meta {
+        name = "TipsPlugin"
+        main = "TipsPlugin"
+        description = "Manages tips"
+        authors = ["Flaghacker"]
+    }
+}
+
+sourceCompatibility = 1.8
+
+sourceSets {
+    main.java.srcDirs = ["src/main/kotlin/"]
+    test.java.srcDirs = []
+}
+
+jar {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url { "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+    }
+
+    dependencies {
+        compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    }
+
+    compileKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+}
