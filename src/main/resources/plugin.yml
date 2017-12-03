@@ -1,0 +1,4 @@
+commands:
+  tip:
+    description: Base command for TipsPlugin, display a random tip. See /<command> help for more info.
+    usage: /<command>

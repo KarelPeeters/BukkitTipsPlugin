@@ -1,0 +1,60 @@
+commands:
+  tip:
+    description: Base command for TipsPlugin, display a random tip. See /<command> help for more info.
+    usage: /<command>
+    permission: tipsplugin.tip
+  tip help:
+    description: Help for TipsPlugin
+    usage: /<command>
+    permission: tipsplugin.tip
+  tip list:
+    description: List all tips
+    usage: /<command> <page>
+    permission: tipsplugin.tip.list
+  tip add:
+    description: Add a tip
+    usage: /<command> [tip]
+    permission: tipsplugin.tip.add
+  tip remove:
+    description: Remove a tip
+    usage: /<command> [index]
+    permission: tipsplugin.tip.remove
+  tip delay:
+    description: View delay
+    usage: /<command>
+    permission: tipsplugin.tip.viewDelay
+  tip delay set:
+    description: Set delay
+    usage: /<command> [delay]
+    permission: tipsplugin.tip.setDelay
+
+
+permissions:
+  tipsplugin.*:
+    description: Gives access to all TipsPlugin commands
+    default: op
+    children:
+      tipsplugin.tip: true
+      tipsplugin.tip.list: true
+      tipsplugin.tip.add: true
+      tipsplugin.tip.remove: true
+      tipsplugin.tip.viewDelay: true
+      tipsplugin.tip.setDelay: true
+
+  tipsplugin.tip:
+    description: Gives access to the random tip base command
+    default: true
+  tipsplugin.tip:
+    description: Gives access to the tip hel command
+    default: true
+  tipsplugin.tip.list:
+    description: Gives access to the tip list command
+  tipsplugin.tip.add:
+    description: Gives access to the tip add command
+  tipsplugin.tip.remove:
+    description: Gives access to the tip remove command
+  tipsplugin.tip.viewDelay:
+    description: Gives access to the delay command
+    default: true
+  tipsplugin.tip.setDelay:
+    description: Gives access to the delay set command
