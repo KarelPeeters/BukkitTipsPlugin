@@ -1,12 +1,29 @@
-import com.jam.commandler.Argument.CommandSession
-import com.jam.commandler.Argument.IntegerArg
-import com.jam.commandler.Argument.MergeRemainingArg
-import com.jam.commandler.Commandler.Commandler
-import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 
+const val PERMISSION_ERR = "You do not have permission to use this command!"
+const val TIP_PERMISSION = "TipsPlugin.tip"
+const val DELAY_PERMISSION = "TipsPlugin.delay"
+
 class TipsPlugin : JavaPlugin() {
+    var tipList = config.getStringList("tips") as List<String>
+        set(value) {
+            field = value
+
+            println("set")
+            config.set("tips", value)
+            saveConfig()
+        }
+
+    var delay = config.getInt("delay")
+        set(value) {
+            field = value
+
+            config["delay"] = value
+            saveConfig()
+
+            scheduleBroadcast()
+        }
+
     override fun onEnable() {
         registerCommands()
         scheduleBroadcast()
@@ -47,18 +64,23 @@ class TipsPlugin : JavaPlugin() {
     fun scheduleBroadcast() {
         runnable?.cancel()
 
+        if (delay == -1) return
+
         runnable = object : BukkitRunnable() {
             override fun run() {
-                this@TipsPlugin.server.broadcastMessage("Tip: ${tipList.pickRandom() ?: "There are no tips"}")
+                tipList.pickRandom()?.let {
+                    this@TipsPlugin.server.broadcastMessage("Tip: $it")
+                }
             }
         }.also { it.runTaskTimer(this, delay.toLong(), delay.toLong()) }
     }
 
-    val tipList = mutableListOf("Tip 1", "Tip 2")
-
-    var delay = 20
-
     fun tip(session: CommandSession) {
+        if (!session.sender.hasPermission(TIP_PERMISSION)) {
+            session.sendError(PERMISSION_ERR)
+            return
+        }
+
         session.sender.sendMessage(
                 tipList.pickRandom() ?: "There are no tips"
         )
@@ -79,21 +101,48 @@ class TipsPlugin : JavaPlugin() {
 
     fun remove(session: CommandSession) {
         val index = session.getProcessed("index") as Int
-        val old = tipList.removeAt(index)
+
+        if (index < 0 || index >= tipList.size) {
+            session.sendError("Index out of bounds")
+            return
+        }
+
+        val old = tipList[index]
+        tipList = tipList.dropAt(index)
 
         session.sender.sendMessage("Removed \"$old\"")
     }
 
     fun delay(session: CommandSession) {
-        session.sender.sendMessage("Current delay: $delay")
+        if (!session.sender.hasPermission(DELAY_PERMISSION)) {
+            session.sendError(PERMISSION_ERR)
+            return
+        }
+        session.sender.sendMessage(
+                if (delay == -1) "Periodic tips disabled"
+                else "Current delay: $delay"
+        )
     }
 
     fun delaySet(session: CommandSession) {
         delay = session.getProcessed("delay") as Int
-        session.sender.sendMessage("Set delay to $delay")
-        scheduleBroadcast()
+
+        if (delay <= 0 && delay != -1) {
+            error("Delay must be positive or -1")
+        }
+
+        session.sender.sendMessage(
+                if (delay == -1) "Disabled periodic tips"
+                else "Set delay to $delay"
+        )
     }
+}
+
+fun CommandSession.sendError(message: String) {
+    sender.sendMessage(ChatColor.RED.toString() + message)
 }
 
 val random = Random()
 fun <T> List<T>.pickRandom() = if (isEmpty()) null else this[random.nextInt(this.size)]
+
+fun <T> List<T>.dropAt(index: Int) = subList(0, index) + subList(index + 1, size)
