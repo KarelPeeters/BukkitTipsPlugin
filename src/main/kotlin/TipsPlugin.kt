@@ -3,16 +3,33 @@ import com.jam.commandler.Argument.IntegerArg
 import com.jam.commandler.Argument.MergeRemainingArg
 import com.jam.commandler.Commandler.Commandler
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 
 class TipsPlugin : JavaPlugin() {
     override fun onEnable() {
+        registerCommands()
+        scheduleBroadcast()
+    }
+
+    fun registerCommands() {
         val commadler = Commandler(this)
 
-        getCommand("tip").executor = commadler
+        getCommand("tip").setExecutor { sender, command, label, args ->
+            val session = CommandSession(sender, command.name, args)
+            if (args.isEmpty()) {
+                tip(session)
+            } else if (args.size == 1 && args[0] == "delay") {
+                delay(session)
+            } else {
+                return@setExecutor commadler.onCommand(sender, command, label, args)
+            }
+
+            true
+        }
+
         commadler.getCommandBuilder("tip").apply {
             //setBehavior(::tip)
-
             addSubcommand("list").setBehavior(::list)
             addSubcommand("add").setBehavior(::add).addArg(MergeRemainingArg("tip"))
             addSubcommand("remove").setBehavior(::remove).addArg(IntegerArg("index"))
@@ -25,15 +42,25 @@ class TipsPlugin : JavaPlugin() {
         commadler.build()
     }
 
+    var runnable: BukkitRunnable? = null
+
+    fun scheduleBroadcast() {
+        runnable?.cancel()
+
+        runnable = object : BukkitRunnable() {
+            override fun run() {
+                this@TipsPlugin.server.broadcastMessage("Tip: ${tipList.pickRandom() ?: "There are no tips"}")
+            }
+        }.also { it.runTaskTimer(this, delay.toLong(), delay.toLong()) }
+    }
+
     val tipList = mutableListOf("Tip 1", "Tip 2")
-    val random = Random()
 
     var delay = 20
 
     fun tip(session: CommandSession) {
         session.sender.sendMessage(
-                if (tipList.isEmpty()) "There are no tips"
-                else tipList[random.nextInt(tipList.size)]
+                tipList.pickRandom() ?: "There are no tips"
         )
     }
 
@@ -64,5 +91,9 @@ class TipsPlugin : JavaPlugin() {
     fun delaySet(session: CommandSession) {
         delay = session.getProcessed("delay") as Int
         session.sender.sendMessage("Set delay to $delay")
+        scheduleBroadcast()
     }
 }
+
+val random = Random()
+fun <T> List<T>.pickRandom() = if (isEmpty()) null else this[random.nextInt(this.size)]
