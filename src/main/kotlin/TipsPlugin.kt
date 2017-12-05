@@ -2,6 +2,7 @@ import com.jam.commandler.Argument.CommandSession
 import com.jam.commandler.Argument.IntegerArg
 import com.jam.commandler.Argument.MergeRemainingArg
 import com.jam.commandler.Commandler.Commandler
+import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
@@ -99,7 +100,7 @@ class TipsPlugin : JavaPlugin() {
     }
 
     fun add(session: CommandSession) {
-        val new = session.getProcessed("tip") as String
+        val new = ChatColor.translateAlternateColorCodes('&', session.getProcessed("tip") as String)
         tipList += new
 
         session.sender.sendMessage(colored { gray("Added ") + white(new) })
