@@ -2,7 +2,6 @@ import com.jam.commandler.Argument.CommandSession
 import com.jam.commandler.Argument.IntegerArg
 import com.jam.commandler.Argument.MergeRemainingArg
 import com.jam.commandler.Commandler.Commandler
-import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
@@ -76,7 +75,7 @@ class TipsPlugin : JavaPlugin() {
         runnable = object : BukkitRunnable() {
             override fun run() {
                 tipList.pickRandom()?.let {
-                    this@TipsPlugin.server.broadcastMessage("Tip: $it")
+                    this@TipsPlugin.server.broadcastMessage(colored { gold("Tip: ") + white(it) })
                 }
             }
         }.also { it.runTaskTimer(this, delay.toLong(), delay.toLong()) }
@@ -89,13 +88,13 @@ class TipsPlugin : JavaPlugin() {
         }
 
         session.sender.sendMessage(
-                tipList.pickRandom() ?: "There are no tips"
+                tipList.pickRandom() ?: colored { red("There are no tips") }
         )
     }
 
     fun list(session: CommandSession) {
         session.sender.sendMessage(
-                tipList.mapIndexed { i, s -> "$i: $s" }.joinToString("\n")
+                tipList.mapIndexed { i, s -> colored { gray(i.toString() + ": ") + white(s) } }.joinToString("\n")
         )
     }
 
@@ -103,7 +102,7 @@ class TipsPlugin : JavaPlugin() {
         val new = session.getProcessed("tip") as String
         tipList += new
 
-        session.sender.sendMessage("Added \"$new\"")
+        session.sender.sendMessage(colored { gray("Added ") + white(new) })
     }
 
     fun remove(session: CommandSession) {
@@ -117,7 +116,7 @@ class TipsPlugin : JavaPlugin() {
         val old = tipList[index]
         tipList = tipList.dropAt(index)
 
-        session.sender.sendMessage("Removed \"$old\"")
+        session.sender.sendMessage(colored { gray("Removed ") + white(old) })
     }
 
     fun delay(session: CommandSession) {
@@ -126,7 +125,7 @@ class TipsPlugin : JavaPlugin() {
             return
         }
         session.sender.sendMessage(
-                if (delay == -1) "Periodic tips disabled"
+                if (delay == -1) colored { red("Periodic tips disabled") }
                 else "Current delay: $delay"
         )
     }
@@ -146,7 +145,7 @@ class TipsPlugin : JavaPlugin() {
 }
 
 fun CommandSession.sendError(message: String) {
-    sender.sendMessage(ChatColor.RED.toString() + message)
+    sender.sendMessage(colored { red(message) })
 }
 
 val random = Random()
