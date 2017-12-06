@@ -12,13 +12,13 @@ buildscript {
 
 plugins {
     id "java"
-    id "ru.endlesscode.bukkitgradle" version "0.6.7"
+    id "ru.endlesscode.bukkitgradle" version "0.7.0"
 }
 
 apply plugin: "kotlin"
 
 group "github.flaghacker.tipsplugin"
-version "0.0.1"
+version "v0.0.3"
 
 bukkit {
     version = bukkit_version
@@ -29,6 +29,10 @@ bukkit {
         description = "Manages tips"
         authors = ["Flaghacker"]
     }
+
+    run {
+        eula = true
+    }
 }
 
 sourceSets {
@@ -37,13 +41,6 @@ sourceSets {
 }
 
 sourceCompatibility = 1.8
-
-//TODO remove once ru.endlesscode.bukkitgradle is fixed
-downloadServerCore.onlyIf { false }
-copyServerCore.onlyIf { false }
-prepareServer.doLast() {
-    new File("$projectDir/server/$bukkit_version/eula.txt").text = "eula=true"
-}
 
 //fat jar
 jar {
@@ -60,6 +57,8 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
+    compileOnly bukkit()
 
     //TODO use actual maven dependency, host currently broken
     //compile "com.jam.commandler:Commandler:1.0.0"
