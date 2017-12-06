@@ -18,7 +18,7 @@ plugins {
 apply plugin: "kotlin"
 
 group "github.flaghacker.tipsplugin"
-version "v0.0.4"
+version "v0.0.5"
 
 bukkit {
     version = bukkit_version

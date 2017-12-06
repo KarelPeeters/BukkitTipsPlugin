@@ -9,7 +9,6 @@ deploy:
 
   on:
       tags: true
-      branch: release
   skip_cleanup: true
 
   api-key:
