@@ -1,0 +1,16 @@
+language: java
+jdk:
+- oraclejdk8
+deploy:
+  provider: releases
+
+  file_glob: true
+  file: "./build/libs/*"
+
+  on:
+      tags: true
+      branch: release
+  skip_cleanup: true
+
+  api-key:
+    secure: Rlc411Elji2iVi97SJhivdnU0y09T1c99DXRN2ifwa7EL0b5aGsf7VnNAj86KKr1yoeM6n5PhCROTT2TAhdZk6vt2vWgKwxPzmeqBf2wIO+TJOwWOiYR1Z+/jQw4ZIM4tc2pD8avItC8JteCtMg+MJZ1Afmub8sDYxMKKd8qmZkFlu9+zguB+xmDkerRDHqZaSm64ElxDO+9yT4hX0LbzS+C9BZK8QDj/A8hANYBjVIU7QzT5GLyLhAbprNW6hDXMGA7o1lINJcyTYHxm9/fn0sQZb7zaO8C9CO8R/We8WAemBc7GIUUkW56TYyIGrQmWmWSA1k37bRekmm6/FHSCVXUZA9CnQIcr4lzyGmHOlJU0kzdj0OfJYVoYoLNhKJTv/pYByqhrAUEnlRSCPwiKMAMxJFvD85DZLeLSa8Z+9TTjrcvssXEbPe87VBLF9IwTCOqkShsKYm4xaQ6yJ/deAqAA39MRSLo33tJstcDud1fMw0FpD20UUQXGE6htHIQBwZwigJtv8VVXSilt8epzQRTO4nkWgukH8jxHqShsJaxg1sGWXu/9RJlSK6W3pml6ofOJJnMa+ouxAoKb3ZorDwTIIN3zH+oGNbri1Koc6iaN1ed/aVOVyHuhpHCqVRZgQvXRHcbc7MQxl9zQhGWiDb7vxLoJZH0wxyVhKmHRoU=
